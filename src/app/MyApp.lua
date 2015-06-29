@@ -1,7 +1,9 @@
-
 require("config")
 require("cocos.init")
 require("framework.init")
+
+require("app.GameUtils")
+require("app.controllers.BuildingsManager")
 
 local MyApp = class("MyApp", cc.mvc.AppBase)
 
