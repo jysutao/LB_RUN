@@ -1,10 +1,13 @@
+--[[
+--队列
+以单向链表的方式进行实现
+]] 
 LB_Queue = class("LB_Queue", nil)
 
 function LB_Queue:ctor()
-	self.MAX_SIZE = 10000	--用于构造循环数组
-	self.front_index = 1
-	self.tail_index = 0
-	self.array = {}
+	self.front_object = nil
+	self.back_object = nil
+	self.size = 0
 end
 
 function LB_Queue:__delete()
@@ -12,46 +15,148 @@ function LB_Queue:__delete()
 end
 
 function LB_Queue:clear()
-	while(not self:IsEmpty())
-	do
+	while not self:IsEmpty() do
 		self:Pop()
 	end
 end
 
 function LB_Queue:Push(object)
-	if self.array[self.tail_index] then
-		self.array[self.tail_index]:__delete()
-		self.array[self.tail_index] = nil
-	end
-	
-	self.tail_index = self.tail_index + 1
-	self.array[self.tail_index] = object	
+	local new_object = {
+		next = nil,
+		data = object,
+	}
+	self.back_object.next = new_object
 
-	if self.tail_index > self.MAX_SIZE then
-		self.tail_index = 1
-	end
+	self.back_object = self.back_object.next
+	self.size = self.size + 1
 end
 
 function LB_Queue:GetFront()	
-	return self.array[self.front_index]	
+	return self.front_object.data
 end
 
 function LB_Queue:Pop()	
-	if not self:IsEmpty() then
-		self.array[self.front_index]:__delete()
-		self.array[self.front_index] = nil
+	local next_object = self.front_object.next
+	self.front_object.next = nil
+	self.front_object.data = nil
+	self.front_object = next_object
+	self.size = self.size - 1
+end
 
-		self.front_index = self.front_index + 1	
-		if self.front_index > self.MAX_SIZE then
-			self.front_index = 1
+function LB_Queue:GetSize()
+	return self.size
+end
+
+function LB_Queue:IsEmpty()
+	return (self.front_object == nil)
+end
+
+--[[
+--栈
+注意：下标从1开始
+]] 
+LB_STACK = class("LB_STACK", nil)
+
+function LB_STACK:ctor()
+	self.list = {} 
+	self.size = 0
+end
+
+function LB_STACK:__delete()
+	self:Clear()
+end
+
+function LB_STACK:Clear()
+	while not self:IsEmpty() do
+		self:Pop()
+	end
+	self.list = {}
+end
+
+function LB_STACK:Push(object)
+	self.size = self.size + 1
+	self.list[self.size] = object
+end
+
+function LB_STACK:PopObject()
+	local ret = nil
+	if self.size >= 1 then
+		ret = self.list[self.size]
+		self.size = self.size - 1
+	end
+	return ret
+end
+
+function LB_STACK:Pop()
+	if not self:IsEmpty() then
+		self.list[self.size]:__delete()
+		self.list[self.size] = nil
+
+		self.size = self.size - 1
+	end
+end
+
+function LB_STACK:GetSize()
+	return self.size
+end
+
+function LB_STACK:IsEmpty()
+	return self:GetSize() <= 0
+end
+
+--[[
+-- 对象池
+]] 
+LB_ObjectPool = class("LB_ObjectPool", nil)
+
+function LB_ObjectPool:ctor(object, size)
+	if not object.clone then
+		print("[GameUtils.LB_ObjectPool]: no clone() method found")
+		return
+	end
+	self.base_object = object
+	self.size = size
+	self.objects = {}
+	self.used = {}
+	local new_object = nil
+	for i = 1, size then
+		self:AddObject(self.base_object)
+	end
+end
+
+function LB_ObjectPool:AddObject(base_object)
+	self.size = self.size + 1
+	self.objects[self.size] = base_object:clone()
+	self.used[self.size] = false
+end
+
+function LB_ObjectPool:__delete()
+	self.base_object = nil
+	for i = size, 1, -1 do
+		self.objects[i] = nil
+	end
+	self.objects = {}
+	self.used = {}
+end
+
+function LB_ObjectPool:Push(object)
+	for i = 1, size do
+		if self.objects[i] == object then
+			self.used[i] = false
 		end
 	end
 end
 
-function LB_Queue:GetSize()
-	return self.tail_index - self.front_index + 1
+function LB_ObjectPool:GetObject()
+	for i = 1, self.size do
+		if self.used[i] == false then
+			self.used[i] = true
+			return self.objects[i]
+		end
+	end
+	self:AddObject(self.base_object)
+	self.used[self.size] = true
+	return self.objects[self.size]
 end
 
-function LB_Queue:IsEmpty()
-	return self.tail_index > self.front_index
-end
+

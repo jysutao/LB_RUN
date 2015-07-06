@@ -2,6 +2,7 @@ local Building = require("app.models.Building")
 local BuildingsManager = class("BuildingsManager", nil)
 
 function BuildingsManager:ctor()
+	print("create BuildingsManager")
 	if BuildingsManager.instance then
 		error("[BuildingsManager] attempt to construct instance twice")
 	end
@@ -14,13 +15,12 @@ function BuildingsManager:ctor()
 end
 
 function BuildingsManager:__delete()
-	self.building_list:__delete()
 	self.building_list = nil
-
 	BuildingsManager.instance = nil
 end
 
 function BuildingsManager:CreateRandomLayer(layer)	
+	
 	math.randomseed(os.time())
 	local num = 100
 	local pre_is_hole = false

@@ -9,7 +9,6 @@ function MainScene:ctor()
             UILabelType = 2, text = "Hello World", size = 64})
         :align(display.CENTER, display.cx, display.cy)
         :addTo(self)    
-    self:scheduleUpdate()
 end
 
 function MainScene:Update(dt)
@@ -17,15 +16,15 @@ function MainScene:Update(dt)
 end
 
 function MainScene:__delete()
-	BuildingsManager.instance:__delete()
+	--BuildingsManager.instance:__delete()
 end
 
 function MainScene:initInstances()
-	BuildingsManager = require("app.controllers.BuildingsManager").new()
+	--BuildingsManager = require("app.controllers.BuildingsManager").new()
 end
 
 function MainScene:initBackground()	
-	BuildingsManager.instance:CreateRandomLayer(self)
+	--BuildingsManager.instance:CreateRandomLayer(self)
 end
 
 function MainScene:onEnter()
