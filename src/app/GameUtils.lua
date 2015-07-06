@@ -25,10 +25,16 @@ function LB_Queue:Push(object)
 		next = nil,
 		data = object,
 	}
+	if not self.back_object then
+		self.front_object = new_object
+		self.back_object = new_object
+		return
+	end
 	self.back_object.next = new_object
 
 	self.back_object = self.back_object.next
 	self.size = self.size + 1
+
 end
 
 function LB_Queue:GetFront()	
@@ -119,7 +125,7 @@ function LB_ObjectPool:ctor(object, size)
 	self.objects = {}
 	self.used = {}
 	local new_object = nil
-	for i = 1, size then
+	for i = 1, size do
 		self:AddObject(self.base_object)
 	end
 end

@@ -11,7 +11,8 @@ function BuildingsManager:ctor()
 	self.end_x = display.right
 	self.start_y = GROUND_Y
 	self.building_width = BUILDING_WIDTH
-	self.building_list = LB_Queue.new()	
+	self.building_pool = LB_ObjectPool.new(Building.new(), BUILDING_MAX_NUM)
+	self.building_bit = {}	
 end
 
 function BuildingsManager:__delete()
@@ -29,18 +30,19 @@ function BuildingsManager:CreateRandomLayer(layer)
 	local random = math.random
 	for k = 1, num - 1 do
 		if random() > 0.7 then			
-			self:AddBuilding(layer)
+			self.building_bit[#self.building_bit + 1] = 1
 			pre_is_hole = false
 		elseif pre_is_hole then
-			self:AddBuilding(layer)
+			self.building_bit[#self.building_bit + 1] = 0
 			pre_is_hole = false
 		else
-			self:AddHole()
+			self.building_bit[#self.building_bit + 1] = 0
 			pre_is_hole = true
 		end
 	end
 end
 
+--[[
 function BuildingsManager:AddBuilding(layer)
 	if not layer then
 		error("[BuildingsManager] layer is nil")
@@ -65,5 +67,5 @@ function BuildingsManager:RemoveFrontBuilding()
 	building:removeFromParent()	
 	BuildingsManager.instance.building_list:Pop()
 end
-
+]]
 return BuildingsManager

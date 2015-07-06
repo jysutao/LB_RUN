@@ -16,15 +16,15 @@ function MainScene:Update(dt)
 end
 
 function MainScene:__delete()
-	--BuildingsManager.instance:__delete()
+	BuildingsManager.instance:__delete()
 end
 
 function MainScene:initInstances()
-	--BuildingsManager = require("app.controllers.BuildingsManager").new()
+	BuildingsManager = require("app.controllers.BuildingsManager").new()
 end
 
 function MainScene:initBackground()	
-	--BuildingsManager.instance:CreateRandomLayer(self)
+	BuildingsManager.instance:CreateRandomLayer(self)
 end
 
 function MainScene:onEnter()

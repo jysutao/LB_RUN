@@ -16,12 +16,6 @@ local Building = class("Building", function (x, y)
 	return ret
 end)
 
-function Building:__delete()
-	if not self:getParent() then
-		self:removeFromParent()
-	end
-end
-
 function Building:Blink(duration)	
 	duration = duration or 3
 
@@ -41,13 +35,6 @@ function Building:Blink(duration)
 	if color_layer:isVisible() then
 		color_layer:stopActionByTag(GAME_ACTION_TAG.BUILDING_BLINK)
 		color_layer:runAction(action_sequence:clone())	
-	end
-end
-
-function Building:Logic()
-	local x = self:getPositionX()
-	if x < BUILDING_CHANGE_COLOR_X then
-		self:ChangeColor()
 	end
 end
 
