@@ -11,10 +11,20 @@ local Building = class("Building", function (x, y)
 	local ret = cc.Node:create()
 	ret:setAnchorPoint(0, 0)
 	ret:addChild(color_layer)
-	ret:addChild(black_layer)	
-	ret:setPosition(x, y)
+	ret:addChild(black_layer)
+	if x then	
+		ret:setPositionX(x)
+	end
+
+	if y then
+		ret:setPositionY(y)
+	end
 	return ret
 end)
+
+function Building:clone()
+	return Building.new(self:getPositionX(), self:getPositionY())
+end
 
 function Building:Blink(duration)	
 	duration = duration or 3
@@ -47,11 +57,15 @@ function Building:ChangeColor()
 end
 
 function Building:startMove()
-	local move_time = self:getPositionX() / CONFIG_SCREEN_WIDTH * BUILDING_MOVE_TIME
+	local move_time = self:getPositionX() * BUILDING_MOVE_TIME / CONFIG_SCREEN_WIDTH
 	local move_action = cc.Sequence:create(cc.MoveTo:create(move_time, cc.p(-BUILDING_WIDTH, GROUND_Y)),
-									cc.CallFunc:create(BuildingsManager.instance.RemoveFrontBuilding))
+									 cc.CallFunc:create(RemoveBuildingSelf))
 	move_action:setTag(GAME_ACTION_TAG.BUILDING_MOVE)
 	self:runAction(move_action)
+end
+
+function RemoveBuildingSelf(sender)
+	BuildingsManager.instance:RemoveBuilding(sender)
 end
 
 return Building

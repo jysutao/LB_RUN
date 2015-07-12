@@ -2,7 +2,7 @@
 --队列
 以单向链表的方式进行实现
 ]] 
-LB_Queue = class("LB_Queue", nil)
+LB_Queue = class("LB_Queue")
 
 function LB_Queue:ctor()
 	self.front_object = nil
@@ -61,7 +61,7 @@ end
 --栈
 注意：下标从1开始
 ]] 
-LB_STACK = class("LB_STACK", nil)
+LB_STACK = class("LB_STACK")
 
 function LB_STACK:ctor()
 	self.list = {} 
@@ -111,46 +111,57 @@ function LB_STACK:IsEmpty()
 end
 
 --[[
--- 对象池
+-- 用于存放Node对象的对象池
 ]] 
-LB_ObjectPool = class("LB_ObjectPool", nil)
+LB_ObjectPool = class("LB_ObjectPool")
 
-function LB_ObjectPool:ctor(object, size)
-	if not object.clone then
-		print("[GameUtils.LB_ObjectPool]: no clone() method found")
-		return
+function LB_ObjectPool:ctor(cc_node_object, size)
+	if not cc_node_object.clone then
+		error("[LB_ObjectPool] no clone function define!")
 	end
-	self.base_object = object
-	self.size = size
+	self.base_object = cc_node_object
 	self.objects = {}
 	self.used = {}
+	self.size = 0
 	local new_object = nil
 	for i = 1, size do
-		self:AddObject(self.base_object)
+		self:AddObject(i)
 	end
 end
 
-function LB_ObjectPool:AddObject(base_object)
+function LB_ObjectPool:AddObject(idx)
+	self.used[idx] = false
+	local clone_object = self.base_object:clone()
+	clone_object:retain()
+	clone_object.id = idx
+	self.objects[idx] = clone_object
 	self.size = self.size + 1
-	self.objects[self.size] = base_object:clone()
-	self.used[self.size] = false
 end
+
 
 function LB_ObjectPool:__delete()
 	self.base_object = nil
-	for i = size, 1, -1 do
+	for i = 1, self.size do
+		self.objects[i]:release()
 		self.objects[i] = nil
 	end
 	self.objects = {}
 	self.used = {}
 end
 
-function LB_ObjectPool:Push(object)
-	for i = 1, size do
-		if self.objects[i] == object then
+-- 删除元素时把调用此方法元素把元素重新放入对象池中
+function LB_ObjectPool:PushBack(cc_node_object)
+	if cc_node_object.stopAllActions then
+		cc_node_object:stopAllActions()
+	end
+
+	for i = 1, self.size do
+		if self.objects[i].id == cc_node_object.id then
 			self.used[i] = false
+			return
 		end
 	end
+	error("[LB_ObjectPool] object not in pool yet")
 end
 
 function LB_ObjectPool:GetObject()
@@ -160,9 +171,7 @@ function LB_ObjectPool:GetObject()
 			return self.objects[i]
 		end
 	end
-	self:AddObject(self.base_object)
+	self:AddObject(self.size + 1)
 	self.used[self.size] = true
 	return self.objects[self.size]
 end
-
-

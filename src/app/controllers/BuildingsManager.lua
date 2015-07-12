@@ -1,71 +1,85 @@
+require("app.GameUtils")
+
+BuildingsManager = class("BuildingsManager")
+
 local Building = require("app.models.Building")
-local BuildingsManager = class("BuildingsManager", nil)
 
 function BuildingsManager:ctor()
-	print("create BuildingsManager")
 	if BuildingsManager.instance then
 		error("[BuildingsManager] attempt to construct instance twice")
 	end
 	BuildingsManager.instance = self
 
-	self.end_x = display.right
-	self.start_y = GROUND_Y
-	self.building_width = BUILDING_WIDTH
+	self.end_object = nil
 	self.building_pool = LB_ObjectPool.new(Building.new(), BUILDING_MAX_NUM)
-	self.building_bit = {}	
+
+	self.right_is_building = false
 end
 
 function BuildingsManager:__delete()
-	self.building_list = nil
+	self.building_pool:__delete()
+	self.building_pool = nil
+
 	BuildingsManager.instance = nil
 end
 
-function BuildingsManager:CreateRandomLayer(layer)	
-	
-	math.randomseed(os.time())
-	local num = 100
-	local pre_is_hole = false
-	self:AddBuilding(layer)
+function BuildingsManager:Update()
 
-	local random = math.random
-	for k = 1, num - 1 do
-		if random() > 0.7 then			
-			self.building_bit[#self.building_bit + 1] = 1
-			pre_is_hole = false
-		elseif pre_is_hole then
-			self.building_bit[#self.building_bit + 1] = 0
-			pre_is_hole = false
+end
+
+function BuildingsManager:CreateRandomLayer(layer)	
+	self.layer = layer
+
+	math.randomseed(os.time())
+
+	for i = 1, BUILDING_MAX_NUM do
+		self:AddNextObject()
+	end
+end
+
+function BuildingsManager:AddNextObject()
+	if self.right_is_building == false then --如果是洞则添加一个房
+		self:AddOneBuilding(true)
+		self.right_is_building = true
+	else
+		local is_add_building = math.random(0, 1)
+		if is_add_building == 1 then
+			self:AddOneBuilding(false)
+			self.right_is_building = true
 		else
-			self.building_bit[#self.building_bit + 1] = 0
-			pre_is_hole = true
+			self.right_is_building = false
 		end
 	end
 end
 
---[[
-function BuildingsManager:AddBuilding(layer)
-	if not layer then
-		error("[BuildingsManager] layer is nil")
-		return
+function BuildingsManager:AddOneBuilding(has_pre_hole)
+	local new_building = self.building_pool:GetObject()
+	
+	local end_x = CONFIG_SCREEN_WIDTH
+	if not has_pre_hole then  -- 前一格是房子
+		end_x = self.end_object:getPositionX() + BUILDING_WIDTH
+	else  -- 前一格是洞
+		if self.end_object then
+			end_x = self.end_object:getPositionX() + 2 * BUILDING_WIDTH
+		end
 	end
 
-	local new_building = Building.new(self.end_x, self.start_y)	
-	new_building:Blink()	
-	new_building:startMove()	
-	self.building_list:Push(new_building)
-	layer:addChild(new_building)
+	new_building:setPosition(cc.p(end_x, GROUND_Y))
+	new_building:startMove()
+	self.layer:addChild(new_building, GAME_Z_ORDER.BUILDING)
 
-	self.end_x = self.end_x + self.building_width
+	self.end_object = new_building
 end
 
-function BuildingsManager:AddHole()
-	self.end_x = self.end_x + self.building_width
-end
+function BuildingsManager:RemoveBuilding(building)
+	-- 删除一个
+	self.layer:removeChild(building)
+	self.building_pool:PushBack(building)
 
-function BuildingsManager:RemoveFrontBuilding()
-	local building = BuildingsManager.instance.building_list:GetFront()
-	building:removeFromParent()	
-	BuildingsManager.instance.building_list:Pop()
+	-- 删除一个的同时加入一个保证无穷完尽
+	if math.random(0, 1) == 1 then
+		self:AddOneBuilding(false)
+	else
+		self:AddOneBuilding(true)
+	end
 end
-]]
-return BuildingsManager
