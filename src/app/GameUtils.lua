@@ -154,7 +154,7 @@ function LB_ObjectPool:PushBack(cc_node_object)
 	if cc_node_object.stopAllActions then
 		cc_node_object:stopAllActions()
 	end
-
+	
 	for i = 1, self.size do
 		if self.objects[i].id == cc_node_object.id then
 			self.used[i] = false
