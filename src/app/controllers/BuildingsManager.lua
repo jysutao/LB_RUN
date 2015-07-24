@@ -73,7 +73,7 @@ function BuildingsManager:AddOneBuilding(has_pre_hole)
 	local pos_y = GROUND_Y + BUILDING_MAX_HEIGHT / 2
 	if not has_pre_hole then  -- 前一格是房子
 		end_x = self.end_object:getPositionX() + BUILDING_INTERVAL
-		pos_y = self.end_object:getPositionY() - 0.5
+		pos_y = self.end_object:getPositionY()
 	else  -- 前一格是洞
 		if self.end_object then
 			end_x = self.end_object:getPositionX() + HOLE_WIDTH + BUILDING_INTERVAL

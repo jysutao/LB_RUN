@@ -41,9 +41,10 @@ Car = class("Car", function(x, y)
 	wheel_r:addChild(line_2)
 
 	
-	local physics_body = cc.PhysicsBody:createBox({width = CAR_BODY_WIDTH, height = CAR_TOTAL_HEIGHT})		
+	local physics_body = cc.PhysicsBody:createBox({width = CAR_BODY_WIDTH, height = CAR_TOTAL_HEIGHT})			
 	physics_body:setMass(CAR_MASS)
 	physics_body:setRotationEnable(false)
+	physics_body:setVelocityLimit(GAME_PHYSICS_CAR_JUMP_VELOCITY)
 	physics_body:setContactTestBitmask(GAME_CONTACT_TEST_BIT_MASK.CAR_MASK)	
     root:setPhysicsBody(physics_body)
 

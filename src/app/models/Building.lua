@@ -19,8 +19,9 @@ local Building = class("Building", function (x, y)
 	if y then
 		ret:setPositionY(y)
 	end
-	local physics_body = cc.PhysicsBody:createEdgeBox({width = BUILDING_WIDTH + 10, height = BUILDING_MAX_HEIGHT})		
-	physics_body:setGravityEnable(false) 
+	local physics_body = cc.PhysicsBody:createEdgeBox({width = BUILDING_WIDTH, height = BUILDING_MAX_HEIGHT})		
+	physics_body:setGravityEnable(false)
+	physics_body:setDynamic(false)
 	physics_body:setMass(10000)	
 	physics_body:setContactTestBitmask(GAME_CONTACT_TEST_BIT_MASK.BUILDING_MASK)
     ret:setPhysicsBody(physics_body)
