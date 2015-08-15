@@ -10,9 +10,25 @@ function BuildingsManager:ctor()
 	end
 	BuildingsManager.instance = self
 
+	-- 重新计算一次屏幕适配后常量的值
+	BUILDING_WIDTH = CONFIG_SCREEN_WIDTH / 10
+	HOLE_WIDTH = BUILDING_WIDTH * 1.6
+	-- 房子间距
+	BUILDING_INTERVAL = BUILDING_WIDTH + BUILDING_WIDTH / 10
+	BUILDING_MAX_HEIGHT = CONFIG_SCREEN_HEIGHT / 3
+	BUILDING_MAX_NUM = 12
+	--移过一屏所用的时间
+	BUILDING_MOVE_TIME = 5
+	BUILDING_CHANGE_COLOR_X = CONFIG_SCREEN_WIDTH / 3
+
+	self:Init()
+end
+
+function BuildingsManager:Init()
 	self.create_by_random = false
 	self.start_object = nil
 	self.end_object = nil
+	print("new pool")
 	self.building_pool = LB_ObjectPool.new(Building.new(), BUILDING_MAX_NUM)
 
 	self.right_is_building = false
@@ -20,10 +36,22 @@ function BuildingsManager:ctor()
 end
 
 function BuildingsManager:__delete()
-	self.building_pool:__delete()
-	self.building_pool = nil
-
+	if self.building_pool then
+		print("delete")
+		self.building_pool:__delete()
+		self.building_pool = nil
+	end
+	
 	BuildingsManager.instance = nil
+end
+
+function BuildingsManager:Clear()
+	if self.building_pool then
+		self.building_pool:__delete()
+		self.building_pool = nil
+	end
+	
+	self:Init()
 end
 
 function BuildingsManager:CreateFlatLayer(layer)

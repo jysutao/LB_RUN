@@ -21,26 +21,23 @@ Car = class("Car", function(x, y)
 	local left_x = - CAR_BODY_WIDTH / 2
 	local bottom_y = - CAR_TOTAL_HEIGHT / 2
 
-	local body = display.newRect(cc.rect(left_x, bottom_y + 2 * CAR_WHEEL_RADIUS, CAR_BODY_WIDTH, CAR_BODY_HEIGHT),{fillColor = cc.c4f(1,1,1,1)})
+	local body = display.newSprite("car_body.png")
+	body:setAnchorPoint(cc.p(0.5, 0))
+	body:setPositionY(bottom_y + 2 * CAR_WHEEL_RADIUS)
+	body:setScaleX(CAR_BODY_WIDTH / body:getContentSize().width)
+	body:setScaleY(CAR_BODY_HEIGHT / body:getContentSize().height)
 	root:addChild(body)
 
-	local wheel_l = display.newSolidCircle(CAR_WHEEL_RADIUS, {x = left_x + CAR_WHEEL_POSITION_X, y = bottom_y + CAR_WHEEL_RADIUS, color = cc.c4f(1, 1, 1, 1)})
+	local wheel_l = display.newSprite("car_wheel.png", left_x + CAR_WHEEL_POSITION_X, bottom_y + CAR_WHEEL_RADIUS)
+	wheel_l:setScale(CAR_WHEEL_RADIUS * 2 / wheel_l:getContentSize().width)
+	wheel_l:runAction(cc.RepeatForever:create(cc.RotateBy:create(1, 180)))
 	root:addChild(wheel_l)
 
-	local line_1 = cc.LayerColor:create(cc.c4b(0xff, 0x00, 0x00, 0xff), 2, CAR_WHEEL_RADIUS * 2)
-	line_1:setPosition(cc.p(left_x + CAR_WHEEL_POSITION_X, bottom_y))
-	line_1:runAction(cc.RepeatForever:create(cc.RotateBy:create(1, 360)))
-	wheel_l:addChild(line_1)
-
-	local wheel_r = display.newSolidCircle(CAR_WHEEL_RADIUS, {x = left_x + CAR_BODY_WIDTH - CAR_WHEEL_POSITION_X, y = bottom_y + CAR_WHEEL_RADIUS, color = cc.c4f(1, 1, 1, 1)})
+	local wheel_r = display.newSprite("car_wheel.png", left_x + CAR_BODY_WIDTH - CAR_WHEEL_POSITION_X, bottom_y + CAR_WHEEL_RADIUS)
+	wheel_r:setScale(CAR_WHEEL_RADIUS * 2 / wheel_l:getContentSize().width)
+	wheel_r:runAction(cc.RepeatForever:create(cc.RotateBy:create(1, 180)))
 	root:addChild(wheel_r)
 
-	local line_2 = cc.LayerColor:create(cc.c4b(0xff, 0x00, 0x00, 0xff), 2, CAR_WHEEL_RADIUS * 2)
-	line_2:setPosition(cc.p(left_x + CAR_BODY_WIDTH - CAR_WHEEL_POSITION_X, bottom_y))
-	line_2:runAction(cc.RepeatForever:create(cc.RotateBy:create(1, 360)))
-	wheel_r:addChild(line_2)
-
-	
 	local physics_body = cc.PhysicsBody:createBox({width = CAR_BODY_WIDTH, height = CAR_TOTAL_HEIGHT})			
 	physics_body:setMass(CAR_MASS)
 	physics_body:setRotationEnable(false)

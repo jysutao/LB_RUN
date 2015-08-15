@@ -119,6 +119,8 @@ function LB_ObjectPool:ctor(cc_node_object, size)
 	if not cc_node_object.clone then
 		error("[LB_ObjectPool] no clone function define!")
 	end
+	print("pool ctor")
+	print(cc_node_object == nil)
 	self.base_object = cc_node_object
 	self.objects = {}
 	self.used = {}
@@ -175,3 +177,13 @@ function LB_ObjectPool:GetObject()
 	self.used[self.size] = true
 	return self.objects[self.size]
 end
+
+ScreenHelper = {}
+function ScreenHelper.AutoScale(sprite)
+	sprite:setScaleX(CONFIG_SCREEN_WIDTH / CONFIG_BASE_WIDTH)
+	sprite:setScaleY(CONFIG_SCREEN_HEIGHT / CONFIG_BASE_HEIGHT)
+end
+
+
+
+

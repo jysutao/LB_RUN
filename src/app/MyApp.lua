@@ -6,6 +6,7 @@ require("framework.init")
 require("app.GameUtils")
 require("app.controllers.BuildingsManager")
 require("app.controllers.FlyObjectManager")
+require("app.controllers.BgController")
 
 local MyApp = class("MyApp", cc.mvc.AppBase)
 
@@ -18,6 +19,7 @@ function MyApp:InitInstances()
 	
 	self.BuildingsManager = BuildingsManager.new()
 	self.FlyObjectManager = FlyObjectManager.new()
+	self.BgController = BgController.new()
 end
 
 function MyApp:DestroyInstances()
@@ -25,14 +27,19 @@ function MyApp:DestroyInstances()
 	self.BuildingsManager = nil
 	self.FlyObjectManager:__delete()
 	self.FlyObjectManager = nil
+	self.BgController:__delete()
+	self.BgController = nil
 end
 
 function MyApp:run()
     cc.FileUtils:getInstance():addSearchPath("res/")
 
     self:InitInstances()
-    
-    self:enterScene("MainScene")
+    self:StarGame()
+end
+
+function MyApp:StarGame()
+	self:enterScene("MainScene", nil, "fade", 0.6, display.COLOR_WHITE)
 end
 
 function MyApp:exit()
