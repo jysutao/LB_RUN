@@ -119,8 +119,6 @@ function LB_ObjectPool:ctor(cc_node_object, size)
 	if not cc_node_object.clone then
 		error("[LB_ObjectPool] no clone function define!")
 	end
-	print("pool ctor")
-	print(cc_node_object == nil)
 	self.base_object = cc_node_object
 	self.objects = {}
 	self.used = {}

@@ -1,6 +1,6 @@
 -- 用于被BuildingsManager使用
 local Building = class("Building", function (x, y)
-	local ret = display.newSprite("wood.png", x, y)
+	local ret = display.newSprite("#wood.png", x, y)
 	ret:setScaleX(BUILDING_WIDTH / ret:getContentSize().width)
 	ret:setScaleY(BUILDING_MAX_HEIGHT / ret:getContentSize().height)
 

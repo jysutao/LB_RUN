@@ -21,19 +21,26 @@ Car = class("Car", function(x, y)
 	local left_x = - CAR_BODY_WIDTH / 2
 	local bottom_y = - CAR_TOTAL_HEIGHT / 2
 
-	local body = display.newSprite("car_body.png")
+	local body = display.newSprite("#car_body.png")
 	body:setAnchorPoint(cc.p(0.5, 0))
 	body:setPositionY(bottom_y + 2 * CAR_WHEEL_RADIUS)
 	body:setScaleX(CAR_BODY_WIDTH / body:getContentSize().width)
 	body:setScaleY(CAR_BODY_HEIGHT / body:getContentSize().height)
 	root:addChild(body)
 
-	local wheel_l = display.newSprite("car_wheel.png", left_x + CAR_WHEEL_POSITION_X, bottom_y + CAR_WHEEL_RADIUS)
+	-- 车轴
+	local axle = display.newSprite("#axle.png", 0, bottom_y + CAR_WHEEL_RADIUS)
+	axle:setScale((CAR_BODY_WIDTH - 2 * CAR_WHEEL_POSITION_X) / axle:getContentSize().width)
+	root:addChild(axle)
+
+	-- 左轮
+	local wheel_l = display.newSprite("#car_wheel.png", left_x + CAR_WHEEL_POSITION_X, bottom_y + CAR_WHEEL_RADIUS)
 	wheel_l:setScale(CAR_WHEEL_RADIUS * 2 / wheel_l:getContentSize().width)
 	wheel_l:runAction(cc.RepeatForever:create(cc.RotateBy:create(1, 180)))
 	root:addChild(wheel_l)
 
-	local wheel_r = display.newSprite("car_wheel.png", left_x + CAR_BODY_WIDTH - CAR_WHEEL_POSITION_X, bottom_y + CAR_WHEEL_RADIUS)
+	-- 右轮
+	local wheel_r = display.newSprite("#car_wheel.png", left_x + CAR_BODY_WIDTH - CAR_WHEEL_POSITION_X, bottom_y + CAR_WHEEL_RADIUS)
 	wheel_r:setScale(CAR_WHEEL_RADIUS * 2 / wheel_l:getContentSize().width)
 	wheel_r:runAction(cc.RepeatForever:create(cc.RotateBy:create(1, 180)))
 	root:addChild(wheel_r)

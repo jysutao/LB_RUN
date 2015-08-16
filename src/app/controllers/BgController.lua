@@ -5,28 +5,23 @@ function BgController:ctor()
 		error("[BgController] attempt to construct instance twice")
 	end
 	BgController.instance = self
+	
+	self:Init()
+end
+
+function BgController:__delete()
+	BgController.instance = nil
+end
+
+function BgController:Init()
 	self.sprite = {}
 end
 
-function BgController:Init(layer)
-	self:ReleaseResource()
-	self.layer = layer
-end
-
-function BgController:ReleaseResource()
-	for index, sprite in pairs(self.sprite) do
-		sprite:release()
-		sprite = nil
-	end
-	self.sprite = {}
-end
-
-function BgController:SetBgSprite(sprite , z_order ,index)
+function BgController:SetBgSprite(layer, sprite , z_order ,index)
 	local index = index or 1
-	sprite:retain()
 	self.sprite[index] = sprite
 	local z_order = z_order or GAME_Z_ORDER.BACKGROUND
-	self.layer:addChild(sprite, z_order)
+	layer:addChild(sprite, z_order)
 end
 
 -- speed为一秒移动的距离, > 0 为向左移动的速度

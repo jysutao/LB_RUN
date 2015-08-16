@@ -28,16 +28,13 @@ function BuildingsManager:Init()
 	self.create_by_random = false
 	self.start_object = nil
 	self.end_object = nil
-	print("new pool")
-	self.building_pool = LB_ObjectPool.new(Building.new(), BUILDING_MAX_NUM)
-
 	self.right_is_building = false
 	self.cur_height = BUILDING_MAX_HEIGHT + GROUND_Y
+	self.building_pool = LB_ObjectPool.new(Building.new(), BUILDING_MAX_NUM)
 end
 
 function BuildingsManager:__delete()
 	if self.building_pool then
-		print("delete")
 		self.building_pool:__delete()
 		self.building_pool = nil
 	end
@@ -54,6 +51,7 @@ function BuildingsManager:Clear()
 	self:Init()
 end
 
+-- 创建没有坑的平地
 function BuildingsManager:CreateFlatLayer(layer)
 	self.layer = layer
 
@@ -63,6 +61,7 @@ function BuildingsManager:CreateFlatLayer(layer)
 	end
 end
 
+-- 创建带坑的随机地形
 function BuildingsManager:CreateRandomLayer(layer)	
 	self.layer = layer	
 

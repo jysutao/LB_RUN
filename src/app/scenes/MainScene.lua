@@ -30,23 +30,32 @@ function MainScene:InitGameObjects()
     self:addChild(ground)
 
     -- 添加背景
-    -- local bg = display.newSprite("bg.png", display.cx, display.cy)
-    -- ScreenHelper.AutoScale(bg)
-    -- BgController.instance:Init(self)
-    -- BgController.instance:SetBgSprite(bg)
-    -- BgController.instance:SetBgSpeed(CONFIG_SCREEN_WIDTH / 20)
+    local bg = display.newSprite("#bg.png", display.cx, display.cy)
+    bg:setScaleX(CONFIG_SCREEN_WIDTH / bg:getContentSize().width)
+    bg:setScaleY(CONFIG_SCREEN_HEIGHT / bg:getContentSize().height)
+    BgController.instance:Init()
+    BgController.instance:SetBgSprite(self, bg)
 
+    -- 获得分数控制器的引用
+    self.score_controller = ScoreController.instance
+    self.score_controller:Init()
+    self.score_controller:CreateScoreLayer(self, GAME_Z_ORDER.FOREGROUND)
 
     -- 添加房子
     BuildingsManager.instance:Init()
     BuildingsManager.instance:CreateFlatLayer(self)
+
     -- 添加英雄
     self.car = Car.new(display.width / 4, display.cy - 15)
     self:addChild(self.car, GAME_Z_ORDER.HERO)
 
+    -- 添加海浪
+    WaveController.instance:Init()
+    WaveController.instance:InitUpWave(self)
+    WaveController.instance:AddWaveTipToLayer(self, GAME_Z_ORDER.FOREGROUND)
+
     self:AddTipLayer()
-    self:AddTouchLayer()    
-    self:AddScoreLayer()  
+    self:AddTouchLayer()     
 end
 
 -- 状态更新
@@ -68,7 +77,7 @@ function MainScene:UpdateState(state)
         self:AddCollision()
     elseif state == GAME_STATE.END then
         self:StopSceneAction()
-        self.result_layer = require("app.scenes.GameOverLayer").new(self.score, self.max_score)
+        self.result_layer = require("app.scenes.GameOverLayer").new()
         self:addChild(self.result_layer, GAME_Z_ORDER.FOREGROUND)
     end
 end
@@ -95,7 +104,7 @@ function MainScene:AddTipLayer()
     self.tip_layer = display.newLayer()
 
     cc.ui.UILabel.new({
-        UILabelType = 2, text = "黑夜给了一辆白色的小车，我将用它驶向光明", size = 28 , color = cc.c3b(0, 255, 0) })
+        UILabelType = 2, text = "长江后浪推前浪,你会倒在哪一浪", size = 28 , color = cc.c3b(0, 255, 0) })
     :align(display.LEFT_TOP, 0, display.top)
     :addTo(self.tip_layer)  
 
@@ -119,15 +128,22 @@ function MainScene:AddTouchLayer()
         return self:onTouch(event.name, event.x, event.y)
     end)
     self.touchLayer:setTouchEnabled(true)
-end
 
-function MainScene:AddScoreLayer(score)
-	self.score = score or 0
-    self.max_score = self.max_score or self.score
-	self.score_label = cc.ui.UILabel.new({
-            UILabelType = 2, text = self.score, size = 64})
-        :align(display.RIGHT_TOP, display.width, display.top)
-        :addTo(self, GAME_Z_ORDER.FOREGROUND)
+    -- 监听Android返回和主菜单键
+    self.touchLayer:setKeypadEnabled(true)
+    self.touchLayer:addNodeEventListener(cc.KEYPAD_EVENT, function (event)  
+        if event.key == "back" then  --返回键
+            device.showAlert("退出", "你确定要退出游戏吗?", {"确定", "取消"}, function (event)
+                if event.buttonIndex == 1 then  
+                    os.exit()
+                else  
+                    device.cancelAlert()  --取消对话框
+                end  
+            end)
+        elseif event.key == "menu" then  --菜单键
+            self:UpdateState(GAME_STATE.END)
+        end        
+    end)
 end
 
 -- 添加碰撞事件检测
@@ -138,7 +154,7 @@ function MainScene:AddCollision()
         elseif node:getTag() == GAME_OBJECT_TAG.BUILDING then
             if not node.hitted then
                 BuildingsManager.instance:SetCurBuildingHeight(node)
-                self:IncScore()
+                self.score_controller:IncScore()
                 node.hitted = true
             end
         elseif node:getTag() == GAME_OBJECT_TAG.GROUND then
@@ -161,11 +177,6 @@ function MainScene:AddCollision()
     eventDispatcher:addEventListenerWithFixedPriority(self.contactListener, 1)
 end
 
-function MainScene:IncScore()
-    self.score = self.score + 1
-    self.score_label:setString(self.score)
-end
-
 -- 触摸事件处理
 function MainScene:onTouch(event, x, y)
     if GAME_STATE.CUR_STATE == GAME_STATE.READY then      
@@ -183,8 +194,9 @@ function MainScene:onTouch(event, x, y)
 end
 
 function MainScene:Update(dt)
-    BuildingsManager.instance:Update(dt)
     BgController.instance:MoveBg(dt)
+    BuildingsManager.instance:Update(dt)
+    WaveController.instance:UpdateWaves(dt)
 end
 
 return MainScene
