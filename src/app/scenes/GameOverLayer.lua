@@ -67,6 +67,7 @@ function GameOverLayer:AddNewRecordIcon()
     new_record:setScale(8)
     self:addChild(new_record)
     new_record:runAction(cc.ScaleTo:create(0.5, normal_scale))
+    MusicController:PlaySound(MUSIC_TYPE.BEAT)
 end
 
 function GameOverLayer:onTouch(event, x, y)

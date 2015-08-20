@@ -60,6 +60,7 @@ function Car:Jump()
 	local y = self:getPositionY() - CAR_TOTAL_HEIGHT / 2
 	local building_y = BuildingsManager.instance:GetCurBuildingHeight()
 	if y >= building_y - 2 and y < building_y + 30 then
-		self:getPhysicsBody():setVelocity(cc.p(0, GAME_PHYSICS_CAR_JUMP_VELOCITY))
+		MusicController.instance:PlaySound(MUSIC_TYPE.JUMP)
+		self:getPhysicsBody():setVelocity(cc.p(0, GAME_PHYSICS_CAR_JUMP_VELOCITY))		
 	end	
 end

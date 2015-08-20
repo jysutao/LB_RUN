@@ -76,6 +76,8 @@ function MainScene:UpdateState(state)
         self.tip_layer:setVisible(false)
         self:AddCollision()
     elseif state == GAME_STATE.END then
+        MusicController.instance:StopAllSound()
+        MusicController.instance:PlaySound(MUSIC_TYPE.DIE)
         self:StopSceneAction()
         self.result_layer = require("app.scenes.GameOverLayer").new()
         self:addChild(self.result_layer, GAME_Z_ORDER.FOREGROUND)

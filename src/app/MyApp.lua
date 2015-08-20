@@ -9,6 +9,7 @@ require("app.controllers.FlyObjectManager")
 require("app.controllers.BgController")
 require("app.controllers.WaveController")
 require("app.controllers.ScoreController")
+require("app.controllers.MusicController")
 
 local MyApp = class("MyApp", cc.mvc.AppBase)
 
@@ -24,6 +25,9 @@ function MyApp:InitInstances()
 	self.BgController = BgController.new()
 	self.WaveController = WaveController.new()
 	self.ScoreController = ScoreController.new()
+	self.MusicController = MusicController.new()
+
+	self.MusicController:Init()
 end
 
 function MyApp:DestroyInstances()
@@ -46,6 +50,10 @@ function MyApp:DestroyInstances()
 	if self.ScoreController then
 		self.ScoreController:__delete()
 		self.ScoreController = nil
+	end
+	if self.MusicController then
+		self.MusicController:__delete()
+		self.MusicController = nil
 	end
 end
 

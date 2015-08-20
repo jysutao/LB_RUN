@@ -126,6 +126,7 @@ function UpWave:Update(dt)
 			WaveController.instance:ShowWaveTip(false)
 		elseif self.cur_state == UpWaveState.RAISE then
 			WaveController.instance:ShowWaveTip(true)
+			MusicController.instance:PlaySound(MUSIC_TYPE.WAVE_UP)
 		end
 	end
 end
