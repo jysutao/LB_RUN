@@ -54,6 +54,9 @@ function MainScene:InitGameObjects()
     WaveController.instance:InitUpWave(self)
     WaveController.instance:AddWaveTipToLayer(self, GAME_Z_ORDER.FOREGROUND)
 
+    -- 添加天气
+    WeatherController.instance:InitWeathers(self, GAME_Z_ORDER.WEATHER)
+
     self:AddTipLayer()
     self:AddTouchLayer()     
 end
@@ -62,22 +65,26 @@ end
 function MainScene:UpdateState(state)
     GAME_STATE.CUR_STATE = state
     BuildingsManager.instance:UpdateState(state)
+    WaveController.instance:UpdateState(state)
     if state == GAME_STATE.LOADING then
         self:InitGameObjects()  
         -- 注册帧事件处理函数
         self:addNodeEventListener(cc.NODE_ENTER_FRAME_EVENT, function(dt) self:Update(dt) end)
         self:scheduleUpdate()
+        GAME_STATE.CUR_STATE = GAME_STATE.READY
+    elseif state == GAME_STATE.START then
         -- 添加飞行背影物品
         self.fly_handle = scheduler.scheduleGlobal(function()
             FlyObjectManager.instance:AddRandomFlyObject(self)
         end, 5.0)
-        GAME_STATE.CUR_STATE = GAME_STATE.READY
-    elseif state == GAME_STATE.START then
         self.tip_layer:setVisible(false)
         self:AddCollision()
+        WeatherController.instance:UpdateState(state)
     elseif state == GAME_STATE.END then
+        self.car:setVisible(false)
         MusicController.instance:StopAllSound()
         MusicController.instance:PlaySound(MUSIC_TYPE.DIE)
+        WeatherController.instance:UpdateState(state)
         self:StopSceneAction()
         self.result_layer = require("app.scenes.GameOverLayer").new()
         self:addChild(self.result_layer, GAME_Z_ORDER.FOREGROUND)
@@ -196,9 +203,9 @@ function MainScene:onTouch(event, x, y)
 end
 
 function MainScene:Update(dt)
-    BgController.instance:MoveBg(dt)
     BuildingsManager.instance:Update(dt)
     WaveController.instance:UpdateWaves(dt)
+    WeatherController.instance:Update(dt)
 end
 
 return MainScene

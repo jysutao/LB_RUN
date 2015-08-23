@@ -30,25 +30,22 @@ function BuildingsManager:Init()
 	self.end_object = nil
 	self.right_is_building = false
 	self.cur_height = BUILDING_MAX_HEIGHT + GROUND_Y
+	if self.building_pool then
+		self:ReleasePool()
+	end
 	self.building_pool = LB_ObjectPool.new(Building.new(), BUILDING_MAX_NUM)
 end
 
 function BuildingsManager:__delete()
-	if self.building_pool then
-		self.building_pool:__delete()
-		self.building_pool = nil
-	end
-	
+	self:ReleasePool()
 	BuildingsManager.instance = nil
 end
 
-function BuildingsManager:Clear()
+function BuildingsManager:ReleasePool()
 	if self.building_pool then
 		self.building_pool:__delete()
 		self.building_pool = nil
 	end
-	
-	self:Init()
 end
 
 -- 创建没有坑的平地

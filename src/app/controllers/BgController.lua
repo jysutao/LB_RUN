@@ -31,11 +31,3 @@ function BgController:SetBgSpeed(speed, index)
 		self.sprite[index].move_speed = speed
 	end
 end
-
-function BgController:MoveBg(dt)
-	-- for _, sprite in pairs(self.sprite) do
-	-- 	if sprite.move_speed then
-	-- 		sprite:setPositionX(sprite:getPositionX() - sprite.move_speed * dt)
-	-- 	end
-	-- end 
-end

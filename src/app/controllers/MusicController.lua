@@ -11,17 +11,15 @@ end
 function MusicController:Init()
 	self:PreLoadSound({
 		MUSIC_TYPE.JUMP, 
-		MUSIC_TYPE.WAVE_UP,
 		MUSIC_TYPE.DIE,
 		MUSIC_TYPE.BEAT,
 	})
+	audio.setSoundsVolume(0.3)
 end
 
 function MusicController:GetMusicName(music_enum)
 	if music_enum == MUSIC_TYPE.JUMP then
 		return "jump.mp3"
-	elseif music_enum == MUSIC_TYPE.WAVE_UP then
-		return "wave_up.mp3"
 	elseif music_enum == MUSIC_TYPE.DIE then
 		return "die.mp3"
 	elseif music_enum == MUSIC_TYPE.BEAT then

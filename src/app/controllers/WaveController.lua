@@ -11,6 +11,7 @@ end
 
 function WaveController:Init()
 	self.waves = {}
+	self.can_raise = false
 end
 
 function WaveController:__delete()
@@ -53,8 +54,10 @@ function WaveController:AddWave(layer, wave_object, z_order, index)
 end
 
 function WaveController:UpdateWaves(dt)
-	for _, v in pairs(self.waves) do
-		v:Update(dt)
+	if self.can_raise then
+		for _, v in pairs(self.waves) do
+			v:Update(dt)
+		end
 	end
 end
 
@@ -75,5 +78,13 @@ function WaveController:InitUpWave(layer)
     up_wave_2:SetGetXFunc(function()
     	return up_wave_1:getPositionX() + CONFIG_SCREEN_WIDTH - 20
     end)
+end
+
+function WaveController:UpdateState(state)
+	if state == GAME_STATE.START then
+		self.can_raise = true
+	else
+		self.can_raise = false
+	end
 end
 

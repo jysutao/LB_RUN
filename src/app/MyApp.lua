@@ -10,6 +10,7 @@ require("app.controllers.BgController")
 require("app.controllers.WaveController")
 require("app.controllers.ScoreController")
 require("app.controllers.MusicController")
+require("app.controllers.WeatherController")
 
 local MyApp = class("MyApp", cc.mvc.AppBase)
 
@@ -26,6 +27,7 @@ function MyApp:InitInstances()
 	self.WaveController = WaveController.new()
 	self.ScoreController = ScoreController.new()
 	self.MusicController = MusicController.new()
+	self.WeatherController = WeatherController.new()
 
 	self.MusicController:Init()
 end
@@ -54,6 +56,10 @@ function MyApp:DestroyInstances()
 	if self.MusicController then
 		self.MusicController:__delete()
 		self.MusicController = nil
+	end
+	if self.WeatherController then
+		self.WeatherController:__delete()
+		self.WeatherController = nil
 	end
 end
 
