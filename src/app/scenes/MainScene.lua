@@ -57,7 +57,9 @@ function MainScene:InitGameObjects()
     -- 添加天气
     WeatherController.instance:InitWeathers(self, GAME_Z_ORDER.WEATHER)
 
-    self:AddTipLayer()
+    -- 添加提示语
+    TipController.instance:UpdateState(GAME_STATE.READY, self)
+
     self:AddTouchLayer()     
 end
 
@@ -77,9 +79,9 @@ function MainScene:UpdateState(state)
         self.fly_handle = scheduler.scheduleGlobal(function()
             FlyObjectManager.instance:AddRandomFlyObject(self)
         end, 5.0)
-        self.tip_layer:setVisible(false)
         self:AddCollision()
         WeatherController.instance:UpdateState(state)
+        TipController.instance:UpdateState(state, self)
     elseif state == GAME_STATE.END then
         self.car:setVisible(false)
         MusicController.instance:StopAllSound()
@@ -107,26 +109,6 @@ function MainScene:StopSceneAction()
     self:unscheduleUpdate()
 
     self:getActionManager():removeAllActions()
-end
-
-function MainScene:AddTipLayer()
-    self.tip_layer = display.newLayer()
-
-    cc.ui.UILabel.new({
-        UILabelType = 2, text = "长江后浪推前浪,你会倒在哪一浪", size = 28 , color = cc.c3b(0, 255, 0) })
-    :align(display.LEFT_TOP, 0, display.top)
-    :addTo(self.tip_layer)  
-
-    local touch_txt = cc.ui.UILabel.new({
-        UILabelType = 2, text = "点击屏幕开始", size = 40 , color = cc.c3b(0, 255, 0) })
-    :align(display.CENTER, display.cx, display.top / 2)
-    :addTo(self.tip_layer)  
-    local bigger = cc.ScaleBy:create(0.6, 1.2)
-    touch_txt:runAction(cc.RepeatForever:create(cc.Sequence:create(bigger, bigger:reverse())))
-
-    self:addChild(self.tip_layer, GAME_Z_ORDER.FOREGROUND)
-
-    self.tip_layer:setVisible(true)
 end
 
 function MainScene:AddTouchLayer()
@@ -188,7 +170,8 @@ end
 
 -- 触摸事件处理
 function MainScene:onTouch(event, x, y)
-    if GAME_STATE.CUR_STATE == GAME_STATE.READY then      
+    if GAME_STATE.CUR_STATE == GAME_STATE.READY then
+        TipController.instance:onTouch(event, x, y)
         self:UpdateState(GAME_STATE.START)
     elseif GAME_STATE.CUR_STATE == GAME_STATE.START then  
         if self.car.can_jump then

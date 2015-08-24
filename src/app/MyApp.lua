@@ -11,6 +11,7 @@ require("app.controllers.WaveController")
 require("app.controllers.ScoreController")
 require("app.controllers.MusicController")
 require("app.controllers.WeatherController")
+require("app.controllers.TipController")
 
 local MyApp = class("MyApp", cc.mvc.AppBase)
 
@@ -28,6 +29,7 @@ function MyApp:InitInstances()
 	self.ScoreController = ScoreController.new()
 	self.MusicController = MusicController.new()
 	self.WeatherController = WeatherController.new()
+	self.TipController = TipController.new()
 
 	self.MusicController:Init()
 end
@@ -61,9 +63,15 @@ function MyApp:DestroyInstances()
 		self.WeatherController:__delete()
 		self.WeatherController = nil
 	end
+	if self.TipController then
+		self.TipController:__delete()
+		self.TipController = nil
+	end
 end
 
 function MyApp:run()
+	cc.Director:getInstance():setAnimationInterval(1 / GAME_FPS)
+
     cc.FileUtils:getInstance():addSearchPath("res/")
     display.addSpriteFrames(RES_PLIST_FILE_NAME, RES_PNG_FILE_NAME)
 
